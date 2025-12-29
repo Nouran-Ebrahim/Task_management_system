@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [LoginController::class, 'login']);
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('/logout', [LoginController::class, 'logout']);
+    Route::group(['prefix' => 'tasks'], function () {
+        Route::get('/', [TaskController::class, 'index']);
+        Route::post('/store', [TaskController::class, 'store']);
+        Route::post('/update/{task}', [TaskController::class, 'update']);
+        Route::post('/addDependencies/{task}', [TaskController::class, 'addDependencies']);
+        Route::delete('delete/{id}', [TaskController::class, 'destroy']);
+        Route::get('/show/{task}', [TaskController::class, 'show']);
+
+    });
 });
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });

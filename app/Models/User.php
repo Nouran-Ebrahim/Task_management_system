@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -41,4 +42,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function tasks()
+    {
+      return   $this->hasMany(Task::class,'assigned_to');
+    }
+    public function getCreatedAtAttribute($value)
+    {
+        return date('Y-m-d', strtotime($value));
+    }
 }
