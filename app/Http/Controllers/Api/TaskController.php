@@ -49,7 +49,7 @@ class TaskController extends Controller
     public function statusUpdate(Task $task, Request $request)
     {
         if ($request->user()->cannot('statusUpdate', $task)) {
-            return $this->apiResponse([], [], 'Unauthorized', false, 403);
+            return $this->apiResponse([], [], 'Unauthorized, it is not your task', false, 403);
 
         }
         $request->validate([
@@ -57,20 +57,21 @@ class TaskController extends Controller
         ]);
         try {
             DB::beginTransaction();
-            $response = $this->taskService->statusUpdate($task,$request->status);
+            $this->taskService->statusUpdate($task, $request->status);
             DB::commit();
             return $this->apiResponse(
-                $response['data'],
-                $response['errors'],
-                $response['msg'],
-                $response['status'],
-                $response['code']
+                [],
+                [],
+                'Status Updated successfull',
+                true,
+                200
             );
 
         } catch (\Exception $exception) {
             DB::rollback();
             report($exception);
-            return $this->apiResponse([], [], $exception->getMessage(), false, 500);
+            $code = $exception->getCode() ? $exception->getCode() : 500;
+            return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
 
@@ -86,14 +87,10 @@ class TaskController extends Controller
         try {
             DB::beginTransaction();
             $data = $request->validated();
-            $data['created_by'] = $request->user()->id;
-            $data['status'] = TaskStatus::PENDING->value;
             $task = $this->taskService->store($data);
             DB::commit();
             return $this->apiResponse(
-                [
-                    'task' => TaskResource::make($task)
-                ],
+                TaskResource::make($task),
                 [],
                 'Created successfully',
                 true,
@@ -102,26 +99,22 @@ class TaskController extends Controller
 
         } catch (\Exception $exception) {
             DB::rollback();
-            report($exception);
-            return $this->apiResponse([], [], $exception->getMessage(), false, 500);
+            $code = $exception->getCode() ? $exception->getCode() : 500;
+            return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
 
     }
     public function addDependencies(Task $task, TaskDependenciesRequest $request)
     {
-         if ($request->user()->cannot('addDependencies', $task)) {
+        if ($request->user()->cannot('addDependencies', $task)) {
             return $this->apiResponse([], [], 'Unauthorized, Managers only can add dependencies', false, 403);
 
         }
 
         try {
             DB::beginTransaction();
-            $status = $this->taskService->addDependencies($task, $request->depends_on_task_id);
-            if ($status == false) {
-                return $this->apiResponse([], [], 'Task can not depend on it self', false, 422);
-
-            }
+            $this->taskService->addDependencies($task, $request->depends_on_task_id);
             DB::commit();
             return $this->apiResponse(
                 [],
@@ -134,7 +127,8 @@ class TaskController extends Controller
         } catch (\Exception $exception) {
             DB::rollback();
             report($exception);
-            return $this->apiResponse([], [], $exception->getMessage(), false, 500);
+            $code = $exception->getCode() ? $exception->getCode() : 500;
+            return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
 
@@ -162,7 +156,8 @@ class TaskController extends Controller
         } catch (\Exception $exception) {
             DB::rollback();
             report($exception);
-            return $this->apiResponse([], [], $exception->getMessage(), false, 500);
+            $code = $exception->getCode() ? $exception->getCode() : 500;
+            return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
 
@@ -174,9 +169,7 @@ class TaskController extends Controller
 
         }
         return $this->apiResponse(
-            [
-                'task' => TaskResource::make($task->load(['dependencies', 'createdby', 'assignee'])),
-            ],
+            TaskResource::make($task->load(['dependencies', 'createdby', 'assignee'])),
             [],
             'Data found',
             true,
@@ -195,6 +188,27 @@ class TaskController extends Controller
             [],
             [],
             'Deleted successfully',
+            true,
+            200
+        );
+
+    }
+    public function assign(Task $task, Request $request)
+    {
+        if (auth()->user()->cannot('assign', $task)) {
+            return $this->apiResponse([], [], 'Unauthorized, Mangers only can assign', false, 403);
+
+        }
+        $request->validate([
+            'assigned_to' => ['required', 'exists:users,id'],
+        ]);
+
+        $task->assigned_to = $request->assigned_to;
+        $task->save();
+        return $this->apiResponse(
+            [],
+            [],
+            'Assigned successfully',
             true,
             200
         );

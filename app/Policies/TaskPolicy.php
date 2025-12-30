@@ -36,6 +36,10 @@ class TaskPolicy
     {
         return $user->isManager();
     }
+    public function assign(User $user): bool
+    {
+        return $user->isManager();
+    }
 
     /**
      * Determine whether the user can update the model.
