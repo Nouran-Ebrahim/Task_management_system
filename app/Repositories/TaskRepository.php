@@ -41,4 +41,36 @@ class TaskRepository
         return $task->dependencies()->sync($depends_on_task_ids);
 
     }
+    public function statusUpdate($task, $status)
+    {
+        if (auth()->user()->isUser() && (auth()->user()->id != $task->assigned_to)) {
+            return [
+                'data' => [],
+                'errors' => [],
+                'msg' => 'This not your task',
+                'status' => false,
+                'code' => 403
+            ];
+        }
+        if ($status == TaskStatus::COMPLETED->value && !$task->canBeCompleted()) {
+            return [
+                'data' => [],
+                'errors' => [],
+                'msg' => 'Task can not be completed until all its dependencies are completed',
+                'status' => false,
+                'code' => 422
+            ];
+
+        }
+        $task->status = $status;
+        $task->save();
+        return [
+            'data' => [],
+            'errors' => [],
+            'msg' => 'Status Updated successfully',
+            'status' => true,
+            'code' => 200
+        ];
+
+    }
 }

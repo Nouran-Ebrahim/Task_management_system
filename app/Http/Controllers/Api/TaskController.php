@@ -57,33 +57,14 @@ class TaskController extends Controller
         ]);
         try {
             DB::beginTransaction();
-            if ($request->user()->isUser() && ($request->user()->id != $task->assigned_to)) {
-                return $this->apiResponse(
-                    [],
-                    [],
-                    'This not your task',
-                    false,
-                    403
-                );
-            }
-            if ($request->status == TaskStatus::COMPLETED->value && !$task->canBeCompleted()) {
-                return $this->apiResponse(
-                    [],
-                    [],
-                    'Task can not be completed until all its dependencies are completed',
-                    false,
-                    422
-                );
-            }
-            $task->status = $request->status;
-            $task->save();
+            $response = $this->taskService->statusUpdate($task,$request->status);
             DB::commit();
             return $this->apiResponse(
-                [],
-                [],
-                'Status Updated successfully',
-                true,
-                200
+                $response['data'],
+                $response['errors'],
+                $response['msg'],
+                $response['status'],
+                $response['code']
             );
 
         } catch (\Exception $exception) {

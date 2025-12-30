@@ -30,6 +30,12 @@ class TaskService
         return $task;
 
     }
+    public function statusUpdate($task,$status)
+    {
+        $task = $this->taskRepository->statusUpdate($task, $status);
+        return $task;
+
+    }
     public function index($request = [])
     {
         $tasks = $this->taskRepository->index($request);
