@@ -30,10 +30,29 @@ class Task extends Model
     }
     public function dependencies()
     {
-       return $this->belongsToMany(Task::class, 'task_dependencies', 'task_id', 'depends_on_task_id');
+        return $this->belongsToMany(Task::class, 'task_dependencies', 'task_id', 'depends_on_task_id');
     }
     public function getCreatedAtAttribute($value)
     {
         return date('Y-m-d H:i a', strtotime($value));
+    }
+    public function canBeCompleted()
+    {
+        return
+            $this->dependencies()->
+                where('status', '!=', TaskStatus::COMPLETED->value)
+                ->count() == 0;
+    }
+    protected function scopeAvailable($query)
+    {
+        if (auth()->check()) {
+            if (auth()->user()->isManager()) {
+                 return $query;
+            } else {
+               return $query->where('assigned_to', auth()->user()->id);
+
+            }
+        }
+
     }
 }

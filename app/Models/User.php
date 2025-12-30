@@ -44,10 +44,19 @@ class User extends Authenticatable
     ];
     public function tasks()
     {
-      return   $this->hasMany(Task::class,'assigned_to');
+        return $this->hasMany(Task::class, 'assigned_to');
     }
     public function getCreatedAtAttribute($value)
     {
         return date('Y-m-d', strtotime($value));
+    }
+    public function isManager()
+    {
+        return $this->role === 'manager';
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
     }
 }

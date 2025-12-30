@@ -30,4 +30,12 @@ class TaskService
         return $task;
 
     }
+    public function index($request = [])
+    {
+        $tasks = $this->taskRepository->index($request);
+        return $tasks;
+
+    }
+
+
 }

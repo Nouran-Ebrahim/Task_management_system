@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\TaskStatus;
 use App\Models\Task;
 use App\Traits\ApiResponse;
 
@@ -16,6 +17,21 @@ class TaskRepository
     {
         return $task->update($data);
     }
+    public function index($request = [])
+    {
+        $tasks = Task::available()->with(['assignee', 'createdby', 'dependencies'])
+            ->when($request['status'] ?? null, function ($q) use ($request) {
+                $q->where('status', $request['status']);
+            })->when($request['assigned_to'] ?? null, function ($q) use ($request) {
+                $q->where('assigned_to', $request['assigned_to']);
+            })->when($request['due_date_from'] ?? null, function ($q) use ($request) {
+                $q->where('due_date', '>=', $request['due_date_from']);
+            })->when($request['due_date_to'] ?? null, function ($q) use ($request) {
+                $q->where('due_date', '<=', $request['due_date_to']);
+            })->latest()->paginate($request['per_page'] ?? 10);
+        return $tasks;
+    }
+
     public function addDependencies($task, $depends_on_task_ids)
     {
         if (in_array($task->id, $depends_on_task_ids)) {
