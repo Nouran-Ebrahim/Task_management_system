@@ -34,7 +34,7 @@ class TaskRepository
 
     public function addDependencies($task, $depends_on_task_ids)
     {
-        return $task->dependencies()->sync($depends_on_task_ids);
+        return $task->dependencies()->attach($depends_on_task_ids);
     }
     public function statusUpdate($task, $status)
     {

@@ -62,7 +62,7 @@ class TaskController extends Controller
             return $this->apiResponse(
                 [],
                 [],
-                'Status Updated successfull',
+                'Status Updated successfully',
                 true,
                 200
             );
@@ -70,7 +70,10 @@ class TaskController extends Controller
         } catch (\Exception $exception) {
             DB::rollback();
             report($exception);
-            $code = $exception->getCode() ? $exception->getCode() : 500;
+            $code = $exception->getCode();
+            if (!is_int($code) || $code < 100 || $code > 599) {
+                $code = 500;
+            }
             return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
@@ -99,7 +102,10 @@ class TaskController extends Controller
 
         } catch (\Exception $exception) {
             DB::rollback();
-            $code = $exception->getCode() ? $exception->getCode() : 500;
+            $code = $exception->getCode();
+            if (!is_int($code) || $code < 100 || $code > 599) {
+                $code = 500;
+            }
             return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
@@ -127,7 +133,10 @@ class TaskController extends Controller
         } catch (\Exception $exception) {
             DB::rollback();
             report($exception);
-            $code = $exception->getCode() ? $exception->getCode() : 500;
+            $code = $exception->getCode();
+            if (!is_int($code) || $code < 100 || $code > 599) {
+                $code = 500;
+            }
             return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
@@ -156,7 +165,10 @@ class TaskController extends Controller
         } catch (\Exception $exception) {
             DB::rollback();
             report($exception);
-            $code = $exception->getCode() ? $exception->getCode() : 500;
+            $code = $exception->getCode();
+            if (!is_int($code) || $code < 100 || $code > 599) {
+                $code = 500;
+            }
             return $this->apiResponse([], [], $exception->getMessage(), false, $code);
 
         }
@@ -192,6 +204,24 @@ class TaskController extends Controller
             200
         );
 
+    }
+    public function removeDependencies(Task $task, Request $request)
+    {
+        if (auth()->user()->cannot('removeDependencies', $task)) {
+            return $this->apiResponse([], [], 'Unauthorized, Mangers only can remove dependencies', false, 403);
+
+        }
+        $request->validate([
+            'depends_on_task_id' => ['required', 'exists:tasks,id'],
+        ]);
+        $task->dependencies()->detach($request->depends_on_task_id);
+        return $this->apiResponse(
+            [],
+            [],
+            'Dependencies removed successfully',
+            true,
+            200
+        );
     }
     public function assign(Task $task, Request $request)
     {

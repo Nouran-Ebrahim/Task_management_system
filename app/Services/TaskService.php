@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\TaskResource;
+use App\Models\Task;
 use App\Repositories\TaskRepository;
 use App\Enums\TaskStatus;
 use App\Traits\ApiResponse;
@@ -12,7 +13,7 @@ class TaskService
 {
     use ApiResponse;
 
-    protected $taskRepository;
+    private $taskRepository;
     public function __construct(TaskRepository $taskRepository)
     {
         $this->taskRepository = $taskRepository;
@@ -27,6 +28,10 @@ class TaskService
     }
     public function update($task, $data)
     {
+        if ($data['status'] == TaskStatus::COMPLETED->value && !$task->canBeCompleted()) {
+            throw new Exception('Task can not be completed until all its dependencies are completed', 422);
+
+        }
         $task = $this->taskRepository->update($task, $data);
         return $task;
 
@@ -35,17 +40,30 @@ class TaskService
     {
         if (in_array($task->id, $depends_on_task_ids)) {
             throw new Exception('Task can not depend on it self', 422);
-
+        }
+        $existingDependencies = $task->dependencies()
+            ->whereIn('depends_on_task_id', $depends_on_task_ids)
+            ->pluck('title')
+            ->toArray();
+        if (!empty($existingDependencies)) {
+            throw new Exception('The following tasks are already dependencies: ' . implode(', ', $existingDependencies), 422);
+        }
+        $canceldTasks = Task::whereIn('id', $depends_on_task_ids)
+            ->where('status', TaskStatus::CANCELED->value)
+            ->pluck('title')
+            ->toArray();
+        if (!empty($canceldTasks)) {
+            throw new Exception('The following tasks are already canceled: ' . implode(', ', $canceldTasks) . ' can not be added', 422);
         }
         $task = $this->taskRepository->addDependencies($task, $depends_on_task_ids);
         return $task;
 
     }
-    public function statusUpdate($task,$status)
+    public function statusUpdate($task, $status)
     {
         if ($status == TaskStatus::COMPLETED->value && !$task->canBeCompleted()) {
-             throw new Exception('Task can not be completed until all its dependencies are completed', 422);
-            
+            throw new Exception('Task can not be completed until all its dependencies are completed', 422);
+
         }
         $task = $this->taskRepository->statusUpdate($task, $status);
         return $task;

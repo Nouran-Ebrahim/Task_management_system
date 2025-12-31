@@ -32,6 +32,10 @@ class Task extends Model
     {
         return $this->belongsToMany(Task::class, 'task_dependencies', 'task_id', 'depends_on_task_id');
     }
+    public function dependsOnTasks()
+    {
+        return $this->belongsToMany(Task::class, 'task_dependencies', 'depends_on_task_id', 'task_id');
+    }
     public function getCreatedAtAttribute($value)
     {
         return date('Y-m-d H:i a', strtotime($value));

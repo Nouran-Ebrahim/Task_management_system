@@ -60,6 +60,10 @@ class TaskPolicy
     {
         return $user->isManager();
     }
+    public function removeDependencies(User $user, Task $task): bool
+    {
+        return $user->isManager();
+    }
 
 
     /**

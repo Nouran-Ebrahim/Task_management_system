@@ -23,12 +23,16 @@ class TaskRequest extends BaseRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'due_date' => 'required|date|after_or_equal:today',
             'assigned_to' => 'required|exists:users,id',
-            // 'status'=>['required', Rule::in(TaskStatus::values())]
         ];
+        if (in_array($this->method(), ['PUT', 'PATCH'])) {
+            $rules['status'] = ['required', Rule::in(TaskStatus::values())];
+        }
+        return $rules;
+
     }
 }
