@@ -41,6 +41,9 @@ class TaskService
         if (in_array($task->id, $depends_on_task_ids)) {
             throw new Exception('Task can not depend on itself', 422);
         }
+        if ($task->status == TaskStatus::COMPLETED->value) {
+            throw new Exception('Can not add dependencies to completed task', 422);
+        }
         //Check Existing Dependencies
         $existingDependencies = $task->dependencies()
             ->wherePivotIn('depends_on_task_id', $depends_on_task_ids)
@@ -49,7 +52,7 @@ class TaskService
         if (!empty($existingDependencies)) {
             throw new Exception('The following task(s) are already dependencies: ' . implode(', ', $existingDependencies), 422);
         }
-    
+        
         //Check Canceld task
         $canceldTasks = Task::whereIn('id', $depends_on_task_ids)
             ->where('status', TaskStatus::CANCELED->value)

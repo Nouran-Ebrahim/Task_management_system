@@ -11,6 +11,7 @@ A robust Task Management API built with Laravel, featuring task dependencies, us
     - Prevents completion of tasks until all dependencies are completed.
     - Circular dependency detection.
     - Task can't depend on itself.
+    - Can not add dependencies to a completed task.
 - **Task Assignment**: Assign tasks to a specific user.
 - **Status Management**: Track tasks as Pending, Completed, or Canceled.
 - **Filtering**: Filtering based on status, due
