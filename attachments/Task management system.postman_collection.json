@@ -1,0 +1,650 @@
+{
+	"info": {
+		"_postman_id": "326b90c6-64b4-4f70-aefb-749f216bb6f2",
+		"name": "Task management system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23356311"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "user0@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|MjpF3EjwNSW3C7PZ4qDe6eCyvys6GBfSt8tcg5ILe64e9f6b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/logout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "store",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|MjpF3EjwNSW3C7PZ4qDe6eCyvys6GBfSt8tcg5ILe64e9f6b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "G",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "G desc",
+									"type": "text"
+								},
+								{
+									"key": "due_date",
+									"value": "2027-02-03",
+									"type": "text"
+								},
+								{
+									"key": "assigned_to",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/tasks/store",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"store"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|MjpF3EjwNSW3C7PZ4qDe6eCyvys6GBfSt8tcg5ILe64e9f6b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "E",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "E desc",
+									"type": "text"
+								},
+								{
+									"key": "due_date",
+									"value": "2026-01-11",
+									"type": "text"
+								},
+								{
+									"key": "assigned_to",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "pending,completed,canceled",
+									"type": "text"
+								},
+								{
+									"key": "_method",
+									"value": "put",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/tasks/update/5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"update",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "4|vDKjlr0AK8wOFnsg9YF7FioFaShjcRsHiTuIgK7naf005f38",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "assigned_to",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/tasks/assign/3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"assign",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "6|D4fBE5Ed83pY8EDzj7a9mXkAOaXMAjFhuPycyKTFe0ee935c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "status",
+									"value": "canceled",
+									"description": "pending,completed,canceled",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/tasks/statusUpdate/2",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"statusUpdate",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "4|vDKjlr0AK8wOFnsg9YF7FioFaShjcRsHiTuIgK7naf005f38",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "status",
+									"value": "completed",
+									"description": "pending,completed,canceled",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/tasks/delete/1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"delete",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "4|vDKjlr0AK8wOFnsg9YF7FioFaShjcRsHiTuIgK7naf005f38",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/tasks/show/2",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"show",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add dependencies",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|MjpF3EjwNSW3C7PZ4qDe6eCyvys6GBfSt8tcg5ILe64e9f6b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "depends_on_task_id[0]",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "depends_on_task_id[1]",
+									"value": "6",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "depends_on_task_id[2]",
+									"value": "7",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/tasks/addDependencies/5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"addDependencies",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove dependencies",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "5|MjpF3EjwNSW3C7PZ4qDe6eCyvys6GBfSt8tcg5ILe64e9f6b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "depends_on_task_id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/tasks/removeDependency/6",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"removeDependency",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "index",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "4|vDKjlr0AK8wOFnsg9YF7FioFaShjcRsHiTuIgK7naf005f38",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/tasks",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"description": "pending,completed,canceled",
+									"disabled": true
+								},
+								{
+									"key": "assigned_to",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "due_date_from",
+									"value": "2026/1/5",
+									"disabled": true
+								},
+								{
+									"key": "due_date_to",
+									"value": "2026/1/5",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": ""
+		}
+	]
+}
