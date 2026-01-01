@@ -1,66 +1,95 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A robust Task Management API built with Laravel, featuring task dependencies, user assignment, and status management.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **User Authentication**: Secure authentication using Laravel Sanctum.
+- **Task Management**: Full CRUD operations for tasks.
+- **Task Dependencies**:
+    - Tasks can depend on other tasks.
+    - Prevents completion of tasks until all dependencies are met.
+    - Automatic circular dependency detection.
+- **Task Assignment**: Assign tasks to specific users.
+- **Status Management**: Track tasks as Pending, Completed, or Canceled.
+- **Filtering**: Efficient task retrieval.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.1 or higher
+- Composer
+- MySQL
 
-## Learning Laravel
+## Installation & Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Clone the repository**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+   git clone <repository_url>
+   cd Task_management_system
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
+2. **Install Dependencies**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+   composer install
 
-### Premium Partners
+3. **Environment Setup**
+   Copy the example environment file and configure your database settings:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+   cp .env.example .env
 
-## Contributing
+   Open `.env` and set your database credentials (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. **Generate Application Key**
 
-## Code of Conduct
+   php artisan key:generate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+5. **Run Migrations**
+   Create the database tables:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   php artisan migrate --seed
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+6. **Serve the Application**
+   php artisan serve
+ 
+   The API will be accessible at `http://localhost:8000`.
+
+## API Documentation
+
+### Authentication
+- `POST /api/login`: Login and receive an API token.
+- `POST /api/logout`: Logout and revoke token (Requires Auth).
+
+### Tasks
+All task routes require authentication (Bearer Token).
+
+- `GET /api/tasks`: List all tasks (supports filtering).
+- `POST /api/tasks/store`: Create a new task.
+- `GET /api/tasks/show/{task}`: View task details.
+- `PUT /api/tasks/update/{task}`: Update task details.
+- `DELETE /api/tasks/delete/{task}`: Delete a task.
+- `POST /api/tasks/statusUpdate/{task}`: Update execution status (Pending/Completed/Canceled).
+- `POST /api/tasks/assign/{task}`: Assign a task to a user.
+
+### Dependencies
+- `POST /api/tasks/addDependencies/{task}`: Add dependencies to a task.
+- `POST /api/tasks/removeDependencies/{task}`: Remove dependencies.
+
+## Authorization & Permissions
+
+The application uses **Policy-based authorization** to control access to tasks based on user roles and assignment.
+
+### Roles
+1. **Manager**
+   - Has full access to all tasks.
+   - Can **Create**, **Update**,**Update Status** **Delete**, **Assign**,and **View** tasks.
+   - Can manage **Dependencies** (Add/Remove).
+   - Can **Retrieve** all tasks.
+
+2. **User (Assignee)**
+   - Can only **Retrieve** tasks assigned to them.
+   - Can only **View** tasks assigned to them.
+   - Can **Update Status** of their assigned tasks (e.g., mark as Completed).
+   - *Cannot* create, delete, update or reassign tasks.
+   - *Cannot* Add/Remove task dependencies.
