@@ -20,7 +20,7 @@ class TaskResource extends JsonResource
             'description' => $this->description,
             'due_date' => $this->due_date,
             'created_by' => $this->createdby->name,
-            'assigned_to' => $this->assignee->name,
+            'assignee' => $this->assignee->name,
             'created_at'=>$this->created_at,
             'status' => $this->status,
             'dependencies'=> DependencyResource::collection($this->dependencies)

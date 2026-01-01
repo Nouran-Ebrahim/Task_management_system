@@ -47,16 +47,16 @@ class Task extends Model
                 where('status', '!=', TaskStatus::COMPLETED->value)
                 ->count() == 0;
     }
-    public function hasCirculation($dependanyId)
+    public function hasCirculation($dependancyId)
     {
-        return $this->checkCirculation($dependanyId, $this->id);
+        return $this->checkCirculation($dependancyId, $this->id);
     }
-    public function checkCirculation($dependanyId, $targetTaskId)
+    public function checkCirculation($dependancyId, $targetTaskId)
     {
-        if ($dependanyId == $targetTaskId) {
+        if ($dependancyId == $targetTaskId) {
             return true; //has Circulation
         }
-        $dependancies = Task::find($dependanyId)?->dependencies()->pluck('tasks.id');
+        $dependancies = Task::find($dependancyId)?->dependencies()->pluck('tasks.id');
         foreach ($dependancies ?? [] as $depnd_id) {
             if ($this->checkCirculation($depnd_id, $targetTaskId)) {
                 return true;

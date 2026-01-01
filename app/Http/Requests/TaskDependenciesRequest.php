@@ -23,7 +23,18 @@ class TaskDependenciesRequest extends BaseRequest
     {
         return [
             'depends_on_task_id' => 'required|array|min:1',
-            'depends_on_task_id.*'=>'required|exists:tasks,id'
+            'depends_on_task_id.*' => 'required|exists:tasks,id'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'depends_on_task_id.required' => 'Please provide the task dependencies.',
+            'depends_on_task_id.array' => 'The task dependencies must be a list.',
+            'depends_on_task_id.min' => 'You must provide at least one task dependency.',
+            'depends_on_task_id.*.exists' => 'The selected task does not exist.',
+            'depends_on_task_id.*.required' => 'The dependency task is required.',
         ];
     }
 }

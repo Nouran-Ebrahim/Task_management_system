@@ -46,8 +46,12 @@ class TaskController extends Controller
         );
 
     }
-    public function statusUpdate(Task $task, Request $request)
+    public function statusUpdate($id, Request $request)
     {
+        $task = $this->taskService->find($id);
+        if (!$task) {
+            return $this->apiResponse([], [], 'Task not found', false, 404);
+        }
         if ($request->user()->cannot('statusUpdate', $task)) {
             return $this->apiResponse([], [], 'Unauthorized, it is not your task', false, 403);
 
@@ -57,6 +61,15 @@ class TaskController extends Controller
         ]);
         try {
             DB::beginTransaction();
+            if ($request->user()->isUser() && $request->status == TaskStatus::CANCELED->value) {
+                return $this->apiResponse(
+                    [],
+                    [],
+                    'Only managers can cancel tasks',
+                    false,
+                    403
+                );
+            }
             $this->taskService->statusUpdate($task, $request->status);
             DB::commit();
             return $this->apiResponse(
@@ -79,7 +92,6 @@ class TaskController extends Controller
         }
 
     }
-
 
     public function store(TaskRequest $request)
     {
@@ -111,8 +123,12 @@ class TaskController extends Controller
         }
 
     }
-    public function addDependencies(Task $task, TaskDependenciesRequest $request)
+    public function addDependencies($id, TaskDependenciesRequest $request)
     {
+        $task = $this->taskService->find($id);
+        if (!$task) {
+            return $this->apiResponse([], [], 'Task not found', false, 404);
+        }
         if ($request->user()->cannot('addDependencies', $task)) {
             return $this->apiResponse([], [], 'Unauthorized, Managers only can add dependencies', false, 403);
 
@@ -143,8 +159,12 @@ class TaskController extends Controller
 
     }
 
-    public function update(Task $task, TaskRequest $request)
+    public function update($id, TaskRequest $request)
     {
+        $task = $this->taskService->find($id);
+        if (!$task) {
+            return $this->apiResponse([], [], 'Task not found', false, 404);
+        }
         if ($request->user()->cannot('update', $task)) {
             return $this->apiResponse([], [], 'Unauthorized, Managers only can update', false, 403);
 
@@ -174,8 +194,12 @@ class TaskController extends Controller
         }
 
     }
-    public function show(Task $task)
+    public function show($id)
     {
+        $task = $this->taskService->find($id);
+        if (!$task) {
+            return $this->apiResponse([], [], 'Task not found', false, 404);
+        }
         if (auth()->user()->cannot('view', $task)) {
             return $this->apiResponse([], [], 'Unauthorized', false, 403);
 
@@ -189,8 +213,12 @@ class TaskController extends Controller
         );
 
     }
-    public function destroy(Task $task)
+    public function destroy($id)
     {
+        $task = $this->taskService->find($id);
+        if (!$task) {
+            return $this->apiResponse([], [], 'Task not found', false, 404);
+        }
         if (auth()->user()->cannot('delete', $task)) {
             return $this->apiResponse([], [], 'Unauthorized, Mangers only can delete', false, 403);
 
@@ -205,26 +233,49 @@ class TaskController extends Controller
         );
 
     }
-    public function removeDependencies(Task $task, Request $request)
+    public function removeDependency($id, Request $request)
     {
-        if (auth()->user()->cannot('removeDependencies', $task)) {
-            return $this->apiResponse([], [], 'Unauthorized, Mangers only can remove dependencies', false, 403);
+        $task = $this->taskService->find($id);
+        if (!$task) {
+            return $this->apiResponse([], [], 'Task not found', false, 404);
+        }
+        if (auth()->user()->cannot('removeDependency', $task)) {
+            return $this->apiResponse([], [], 'Unauthorized, Mangers only can remove dependency', false, 403);
 
         }
         $request->validate([
             'depends_on_task_id' => ['required', 'exists:tasks,id'],
         ]);
-        $task->dependencies()->detach($request->depends_on_task_id);
-        return $this->apiResponse(
-            [],
-            [],
-            'Dependencies removed successfully',
-            true,
-            200
-        );
+
+        try {
+            DB::beginTransaction();
+            $this->taskService->removeDependency($task, $request->depends_on_task_id);
+            DB::commit();
+            return $this->apiResponse(
+                [],
+                [],
+                'Dependencies removed successfully',
+                true,
+                200
+            );
+
+        } catch (\Exception $exception) {
+            DB::rollback();
+            report($exception);
+            $code = $exception->getCode();
+            if (!is_int($code) || $code < 100 || $code > 599) {
+                $code = 500;
+            }
+            return $this->apiResponse([], [], $exception->getMessage(), false, $code);
+
+        }
     }
-    public function assign(Task $task, Request $request)
+    public function assign($id, Request $request)
     {
+        $task = $this->taskService->find($id);
+        if (!$task) {
+            return $this->apiResponse([], [], 'Task not found', false, 404);
+        }
         if (auth()->user()->cannot('assign', $task)) {
             return $this->apiResponse([], [], 'Unauthorized, Mangers only can assign', false, 403);
 
@@ -244,4 +295,5 @@ class TaskController extends Controller
         );
 
     }
+
 }

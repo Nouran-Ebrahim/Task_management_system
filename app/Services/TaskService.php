@@ -39,7 +39,7 @@ class TaskService
     public function addDependencies($task, $depends_on_task_ids)
     {
         if (in_array($task->id, $depends_on_task_ids)) {
-            throw new Exception('Task can not depend on it self', 422);
+            throw new Exception('Task can not depend on itself', 422);
         }
         //Check Existing Dependencies
         $existingDependencies = $task->dependencies()
@@ -47,15 +47,16 @@ class TaskService
             ->pluck('title')
             ->toArray();
         if (!empty($existingDependencies)) {
-            throw new Exception('The following tasks are already dependencies: ' . implode(', ', $existingDependencies), 422);
+            throw new Exception('The following task(s) are already dependencies: ' . implode(', ', $existingDependencies), 422);
         }
+    
         //Check Canceld task
         $canceldTasks = Task::whereIn('id', $depends_on_task_ids)
             ->where('status', TaskStatus::CANCELED->value)
             ->pluck('title')
             ->toArray();
         if (!empty($canceldTasks)) {
-            throw new Exception('The following tasks are already canceled: ' . implode(', ', $canceldTasks) . ' can not be added', 422);
+            throw new Exception('The following task(s) are already canceled: ' . implode(', ', $canceldTasks) . ' can not be added', 422);
         }
         //Check Circulation
         foreach ($depends_on_task_ids as $depend_id) {
@@ -82,6 +83,20 @@ class TaskService
     {
         $tasks = $this->taskRepository->index($request);
         return $tasks;
+
+    }
+    public function removeDependency($task, $depends_on_task_id)
+    {
+        $dependancyExsits = $task->dependencies()->wherePivot('depends_on_task_id', $depends_on_task_id)->exists();
+        if (!$dependancyExsits) {
+            throw new Exception('Dependency not found in this task', 422);
+        }
+        return $this->taskRepository->removeDependency($task, $depends_on_task_id);
+
+    }
+    public function find($id)
+    {
+        return $this->taskRepository->find($id);
 
     }
 

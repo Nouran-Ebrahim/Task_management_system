@@ -38,10 +38,19 @@ class TaskRepository
     }
     public function statusUpdate($task, $status)
     {
-        
+
         $task->status = $status;
         $task->save();
         return $task;
 
+    }
+    public function find($id)
+    {
+        return Task::find($id);
+
+    }
+    public function removeDependency($task, $depends_on_task_id)
+    {
+        return $task->dependencies()->detach($depends_on_task_id);
     }
 }

@@ -22,13 +22,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'tasks'], function () {
         Route::get('/', [TaskController::class, 'index']);
         Route::post('/store', [TaskController::class, 'store']);
-        Route::put('/update/{task}', [TaskController::class, 'update']);
-        Route::post('/addDependencies/{task}', [TaskController::class, 'addDependencies']);
-        Route::post('/removeDependencies/{task}', [TaskController::class, 'removeDependencies']);
-        Route::post('/assign/{task}', [TaskController::class, 'assign']);
-        Route::delete('delete/{task}', [TaskController::class, 'destroy']);
-        Route::post('/statusUpdate/{task}', [TaskController::class, 'statusUpdate']);
-        Route::get('/show/{task}', [TaskController::class, 'show']);
+        Route::put('/update/{id}', [TaskController::class, 'update']);
+        Route::post('/addDependencies/{id}', [TaskController::class, 'addDependencies']);
+        Route::post('/removeDependency/{id}', [TaskController::class, 'removeDependency']);
+        Route::post('/assign/{id}', [TaskController::class, 'assign']);
+        Route::delete('delete/{id}', [TaskController::class, 'destroy']);
+        Route::post('/statusUpdate/{id}', [TaskController::class, 'statusUpdate']);
+        Route::get('/show/{id}', [TaskController::class, 'show']);
 
     });
 });

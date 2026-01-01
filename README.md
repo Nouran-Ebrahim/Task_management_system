@@ -8,11 +8,13 @@ A robust Task Management API built with Laravel, featuring task dependencies, us
 - **Task Management**: Full CRUD operations for tasks.
 - **Task Dependencies**:
     - Tasks can depend on other tasks.
-    - Prevents completion of tasks until all dependencies are met.
-    - Automatic circular dependency detection.
-- **Task Assignment**: Assign tasks to specific users.
+    - Prevents completion of tasks until all dependencies are completed.
+    - Circular dependency detection.
+    - Task can't depend on itself.
+- **Task Assignment**: Assign tasks to a specific user.
 - **Status Management**: Track tasks as Pending, Completed, or Canceled.
-- **Filtering**: Efficient task retrieval.
+- **Filtering**: Filtering based on status, due
+date range, or assigned user.
 
 ## Prerequisites
 
@@ -25,26 +27,19 @@ A robust Task Management API built with Laravel, featuring task dependencies, us
 
 1. **Clone the repository**
 
-   git clone <repository_url>
+   git clone <https://github.com/Nouran-Ebrahim/Task_management_system.git>
    cd Task_management_system
-
 
 2. **Install Dependencies**
 
    composer install
 
 3. **Environment Setup**
-   Copy the example environment file and configure your database settings:
-
-   cp .env.example .env
-
-   Open `.env` and set your database credentials (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+ Configure database settings in `.env` file:
+ set database credentials (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
 
 4. **Generate Application Key**
-
    php artisan key:generate
-
-
 5. **Run Migrations**
    Create the database tables:
 
@@ -60,22 +55,22 @@ A robust Task Management API built with Laravel, featuring task dependencies, us
 
 ### Authentication
 - `POST /api/login`: Login and receive an API token.
-- `POST /api/logout`: Logout and revoke token (Requires Auth).
+- `POST /api/logout`: Logout and revoke tokens (Requires Auth).
 
 ### Tasks
 All task routes require authentication (Bearer Token).
 
 - `GET /api/tasks`: List all tasks (supports filtering).
 - `POST /api/tasks/store`: Create a new task.
-- `GET /api/tasks/show/{task}`: View task details.
-- `PUT /api/tasks/update/{task}`: Update task details.
-- `DELETE /api/tasks/delete/{task}`: Delete a task.
-- `POST /api/tasks/statusUpdate/{task}`: Update execution status (Pending/Completed/Canceled).
-- `POST /api/tasks/assign/{task}`: Assign a task to a user.
+- `GET /api/tasks/show/{id}`: View task details.
+- `PUT /api/tasks/update/{id}`: Update task details.
+- `DELETE /api/tasks/delete/{id}`: Delete a task.
+- `POST /api/tasks/statusUpdate/{id}`: Update task status (Pending/Completed/Canceled).
+- `POST /api/tasks/assign/{id}`: Assign a task to a user.
 
 ### Dependencies
-- `POST /api/tasks/addDependencies/{task}`: Add dependencies to a task.
-- `POST /api/tasks/removeDependencies/{task}`: Remove dependencies.
+- `POST /api/tasks/addDependencies/{id}`: Add dependencies to a task.
+- `POST /api/tasks/removeDependency/{id}`: Remove dependency from a task.
 
 ## Authorization & Permissions
 
