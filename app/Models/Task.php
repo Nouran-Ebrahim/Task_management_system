@@ -47,13 +47,31 @@ class Task extends Model
                 where('status', '!=', TaskStatus::COMPLETED->value)
                 ->count() == 0;
     }
+    public function hasCirculation($dependanyId)
+    {
+        return $this->checkCirculation($dependanyId, $this->id);
+    }
+    public function checkCirculation($dependanyId, $targetTaskId)
+    {
+        if ($dependanyId == $targetTaskId) {
+            return true; //has Circulation
+        }
+        $dependancies = Task::find($dependanyId)?->dependencies()->pluck('tasks.id');
+        foreach ($dependancies ?? [] as $depnd_id) {
+            if ($this->checkCirculation($depnd_id, $targetTaskId)) {
+                return true;
+            }
+
+        }
+        return false;
+    }
     protected function scopeAvailable($query)
     {
         if (auth()->check()) {
             if (auth()->user()->isManager()) {
-                 return $query;
+                return $query;
             } else {
-               return $query->where('assigned_to', auth()->user()->id);
+                return $query->where('assigned_to', auth()->user()->id);
 
             }
         }

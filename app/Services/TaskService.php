@@ -41,13 +41,15 @@ class TaskService
         if (in_array($task->id, $depends_on_task_ids)) {
             throw new Exception('Task can not depend on it self', 422);
         }
+        //Check Existing Dependencies
         $existingDependencies = $task->dependencies()
-            ->whereIn('depends_on_task_id', $depends_on_task_ids)
+            ->wherePivotIn('depends_on_task_id', $depends_on_task_ids)
             ->pluck('title')
             ->toArray();
         if (!empty($existingDependencies)) {
             throw new Exception('The following tasks are already dependencies: ' . implode(', ', $existingDependencies), 422);
         }
+        //Check Canceld task
         $canceldTasks = Task::whereIn('id', $depends_on_task_ids)
             ->where('status', TaskStatus::CANCELED->value)
             ->pluck('title')
@@ -55,6 +57,13 @@ class TaskService
         if (!empty($canceldTasks)) {
             throw new Exception('The following tasks are already canceled: ' . implode(', ', $canceldTasks) . ' can not be added', 422);
         }
+        //Check Circulation
+        foreach ($depends_on_task_ids as $depend_id) {
+            if ($task->hasCirculation($depend_id)) {
+                throw new Exception('some dependencies will cause circulation', 422);
+            }
+        }
+
         $task = $this->taskRepository->addDependencies($task, $depends_on_task_ids);
         return $task;
 
