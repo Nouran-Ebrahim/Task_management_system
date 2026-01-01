@@ -16,7 +16,8 @@ A robust Task Management API built with Laravel, featuring task dependencies, us
 
 ## Prerequisites
 
-- PHP 8.1 or higher
+- PHP 8.1
+- Laravel 10
 - Composer
 - MySQL
 
